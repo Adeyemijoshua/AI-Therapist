@@ -5,35 +5,35 @@
 @layer base {
   :root {
     /* Calming light theme colors */
-    --background: 180 20% 99%;
-    --foreground: 200 8% 24%;
+    --background: 252 253 253;
+    --foreground: 61 48 40;
 
-    --card: 180 20% 99%;
-    --card-foreground: 200 8% 24%;
+    --card: 252 253 253;
+    --card-foreground: 56 63 66;
 
-    --popover: 180 20% 99%;
-    --popover-foreground: 200 8% 24%;
+    --popover: 252 253 253;
+    --popover-foreground: 56 63 66;
 
     /* Soft sage green as primary */
-    --primary: 150 30% 60%;
-    --primary-foreground: 150 40% 16%;
+    --primary: 232 180 166;
+    --primary-foreground: 255 249 245;
 
     /* Gentle lavender as secondary */
-    --secondary: 250 20% 96%;
-    --secondary-foreground: 250 10% 30%;
+    --secondary: 255 249 245;
+    --secondary-foreground: 71 69 84;
 
     /* Muted tones */
-    --muted: 210 20% 96%;
-    --muted-foreground: 215 16% 45%;
+    --muted: 184 168 157;
+    --muted-foreground: 61 48 40;
 
     /* Soft accent */
-    --accent: 180 25% 95%;
-    --accent-foreground: 200 8% 24%;
+    --accent: 184 168 157;
+    --accent-foreground: 56 63 66;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 20% 98%;
+    --destructive: 239 67 67;
+    --destructive-foreground: 249 250 251;
 
-    --border: 200 10% 90%;
+    --border: 184 168 157;
     --input: 200 10% 90%;
     --ring: 150 30% 60%;
 
@@ -42,37 +42,37 @@
 
   .dark {
     /* Soothing dark theme colors */
-    --background: 200 50% 3%;
+    /* --background: 200 50% 3%;
     --foreground: 210 20% 98%;
 
     --card: 200 50% 3%;
     --card-foreground: 210 20% 98%;
 
     --popover: 200 50% 3%;
-    --popover-foreground: 210 20% 98%;
+    --popover-foreground: 210 20% 98%; */
 
     /* Soft sage in dark mode */
-    --primary: 150 30% 70%;
-    --primary-foreground: 150 40% 16%;
+    /* --primary: 150 30% 70%;
+    --primary-foreground: 150 40% 16%; */
 
     /* Gentle purple in dark mode */
-    --secondary: 250 20% 20%;
-    --secondary-foreground: 210 20% 98%;
+    /* --secondary: 250 20% 20%;
+    --secondary-foreground: 210 20% 98%; */
 
     /* Muted dark tones */
-    --muted: 200 50% 10%;
-    --muted-foreground: 210 20% 70%;
+    /* --muted: 200 50% 10%;
+    --muted-foreground: 210 20% 70%; */
 
     /* Soft dark accent */
-    --accent: 200 50% 10%;
-    --accent-foreground: 210 20% 98%;
+    /* --accent: 200 50% 10%;
+    --accent-foreground: 210 20% 98%; */
 
-    --destructive: 0 62% 30%;
+    /* --destructive: 0 62% 30%;
     --destructive-foreground: 210 20% 98%;
 
     --border: 200 50% 10%;
     --input: 200 50% 10%;
-    --ring: 150 30% 70%;
+    --ring: 150 30% 70%; */
   }
 }
 
@@ -88,6 +88,7 @@
 
 /* Add some calming animations */
 .hover-lift {
+  /* color: rgb(61, 48, 40); */
   @apply transition-transform duration-200 hover:-translate-y-1;
 }
 

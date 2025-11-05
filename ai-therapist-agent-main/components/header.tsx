@@ -9,10 +9,10 @@ import {
   MessageCircle,
   AudioWaveform,
   LogOut,
-  LogIn,
+  // LogIn,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "./theme-toggle";
+// import { ThemeToggle } from "./theme-toggle";
 import { SignInButton } from "@/components/auth/sign-in-button";
 import { useSession } from "@/lib/contexts/session-context";
 
@@ -28,7 +28,7 @@ export function Header() {
 
   return (
     <div className="w-full fixed top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="absolute inset-0 border-b border-primary/10" />
+      <div className="absolute inset-0 border-b border-primary/40" />
       <header className="relative max-w-6xl mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <Link
@@ -61,7 +61,7 @@ export function Header() {
             </nav>
 
             <div className="flex items-center gap-3">
-              <ThemeToggle />
+              {/* <ThemeToggle /> */}
 
               {isAuthenticated ? (
                 <>
