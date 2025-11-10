@@ -72,7 +72,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     try {
       const token = localStorage.getItem("token");
       if (token) {
-        await fetch("/api/auth/logout", {
+        await fetch("https://ai-therepist-agent-backend-api.onrender.com/auth/logout", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,

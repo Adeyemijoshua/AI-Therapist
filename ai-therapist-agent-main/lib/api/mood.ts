@@ -39,6 +39,9 @@ export async function trackMood(
   return response.json();
 }
 
+
+
+/////////////////////////////////////////
 export async function getMoodHistory(params?: {
   startDate?: string;
   endDate?: string;

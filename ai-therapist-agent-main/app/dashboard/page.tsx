@@ -373,9 +373,29 @@ export default function Dashboard() {
       const sessions = await getAllChatSessions();
 
       // Fetch today's activities
-      const activitiesResponse = await fetch("/api/activities/today");
-      if (!activitiesResponse.ok) throw new Error("Failed to fetch activities");
-      const activities = await activitiesResponse.json();
+      // Get the token from localStorage (or wherever you store it after login)
+      const token = localStorage.getItem("token");
+
+      const activitiesResponse = await fetch(
+        "https://ai-therepist-agent-backend-api.onrender.com/api/activity/today",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        }
+      );
+
+      if (!activitiesResponse.ok) {
+        const error = await activitiesResponse.json();
+        console.error("Failed to fetch activities:", error);
+        throw new Error(error.message || "Failed to fetch activities");
+      }
+
+const activities = await activitiesResponse.json();
+console.log("Today's activities:", activities);
+
 
       // Calculate mood score from activities
       const moodEntries = activities.filter(

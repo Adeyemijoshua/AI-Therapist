@@ -24,6 +24,10 @@ declare module "next-auth/jwt" {
   }
 }
 
+ const API_URL =
+    process.env.BACKEND_API_URL ||
+    'https://ai-therepist-agent-backend-api.onrender.com';
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -39,7 +43,7 @@ export const authOptions: NextAuthOptions = {
 
         try {
           const response = await fetch(
-            `${process.env.BACKEND_URL}/api/auth/login`,
+            `${API_URL}/api/auth/login`,
             {
               method: "POST",
               headers: {
