@@ -3,42 +3,42 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    /* Calming light theme colors */
-    --background: 252 253 253;
-    --foreground: 61 48 40;
+ :root {
+  /* Calming light theme colors */
+  --background: 252 253 253;
+  --foreground: 61 48 40;
 
-    --card: 252 253 253;
-    --card-foreground: 56 63 66;
+  --card: 252 253 253;
+  --card-foreground: 56 63 66;
 
-    --popover: 252 253 253;
-    --popover-foreground: 56 63 66;
+  --popover: 252 253 253;
+  --popover-foreground: 56 63 66;
 
-    /* Soft sage green as primary */
-    --primary: 232 180 166;
-    --primary-foreground: 255 249 245;
+  /* Changed from pink to calming teal */
+  --primary: 173 80% 40%;
+  --primary-foreground: 255 249 245;
 
-    /* Gentle lavender as secondary */
-    --secondary: 255 249 245;
-    --secondary-foreground: 71 69 84;
+  /* Gentle lavender as secondary */
+  --secondary: 255 249 245;
+  --secondary-foreground: 71 69 84;
 
-    /* Muted tones */
-    --muted: 184 168 157;
-    --muted-foreground: 61 48 40;
+  /* Muted tones */
+  --muted: 184 168 157;
+  --muted-foreground: 61 48 40;
 
-    /* Soft accent */
-    --accent: 184 168 157;
-    --accent-foreground: 56 63 66;
+  /* Soft accent */
+  --accent: 184 168 157;
+  --accent-foreground: 56 63 66;
 
-    --destructive: 239 67 67;
-    --destructive-foreground: 249 250 251;
+  --destructive: 239 67 67;
+  --destructive-foreground: 249 250 251;
 
-    --border: 184 168 157;
-    --input: 200 10% 90%;
-    --ring: 150 30% 60%;
+  --border: 184 168 157;
+  --input: 200 10% 90%;
+  --ring: 173 80% 40%; /* Also changed to match primary */
 
-    --radius: 0.75rem;
-  }
+  --radius: 0.75rem;
+}
 
   .dark {
     /* Soothing dark theme colors */

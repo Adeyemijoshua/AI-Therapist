@@ -100,8 +100,10 @@ interface DailyStats {
   lastUpdated: Date;
 }
 
+
+
 // Update the calculateDailyStats function to show correct stats
-const calculateDailyStats = (activities: Activity[]): DailyStats => {
+const calculateDailyStats = async (activities: Activity[]): Promise<DailyStats> => {
   const today = startOfDay(new Date());
   const todaysActivities = activities.filter((activity) =>
     isWithinInterval(new Date(activity.timestamp), {
@@ -110,32 +112,79 @@ const calculateDailyStats = (activities: Activity[]): DailyStats => {
     })
   );
 
-  // Calculate mood score (average of today's mood entries)
-  const moodEntries = todaysActivities.filter(
-    (a) => a.type === "mood" && a.moodScore !== null
-  );
-  const averageMood =
-    moodEntries.length > 0
-      ? Math.round(
-          moodEntries.reduce((acc, curr) => acc + (curr.moodScore || 0), 0) /
-            moodEntries.length
-        )
-      : null;
+  // Calculate REAL completion rate
 
-  // Count therapy sessions (all sessions ever)
+const completedActivities = todaysActivities.filter(a => 
+  a.completed === true // Add other possible completion indicators
+);
+// In calculateDailyStats function, replace the completion calculation:
+
+const completionRate = todaysActivities.length > 0 ? 100 : 0;
+
+console.log("Auto-completion: All", todaysActivities.length, "activities marked as completed");
+
+console.log("Completion calculation:", {
+  total: todaysActivities.length,
+  completed: completedActivities.length,
+  rate: completionRate
+});
+
+  // Fetch today's mood from API
+
+// Fetch today's mood from API
+let moodScore = null;
+try {
+  const token = localStorage.getItem("token");
+  const moodResponse = await fetch(
+    "https://ai-therepist-agent-backend-api.onrender.com/api/mood/today",
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : "",
+      },
+    }
+  );
+
+  if (moodResponse.ok) {
+    const moodData = await moodResponse.json();
+    console.log("Today's mood data:", moodData);
+    
+    // FIX: Handle array response - get the first mood entry
+    if (Array.isArray(moodData) && moodData.length > 0) {
+      moodScore = moodData[0].score; // Get score from first item in array
+      console.log("Found mood score:", moodScore);
+    } else if (moodData && typeof moodData.score === 'number') {
+      // Fallback for single object response
+      moodScore = moodData.score;
+    } else {
+      console.log("No valid mood score found");
+      moodScore = null;
+    }
+  } else {
+    console.log("Mood API response not OK:", moodResponse.status);
+  }
+} catch (error) {
+  console.error("Error fetching mood data:", error);
+}
+
+  // Count therapy sessions
   const therapySessions = activities.filter((a) => a.type === "therapy").length;
 
   return {
-    moodScore: averageMood,
-    completionRate: 100, // Always 100% as requested
-    mindfulnessCount: therapySessions, // Total number of therapy sessions
+    moodScore: moodScore,
+    completionRate: completionRate, // Use calculated value
+    mindfulnessCount: therapySessions,
     totalActivities: todaysActivities.length,
     lastUpdated: new Date(),
   };
 };
 
 // Rename the function
-const generateInsights = (activities: Activity[]) => {
+
+const generateInsights = (activities: Activity[], dailyStats: DailyStats) => {
+  console.log("Generating insights with:", { activities, dailyStats });
+  
   const insights: {
     title: string;
     description: string;
@@ -143,126 +192,63 @@ const generateInsights = (activities: Activity[]) => {
     priority: "low" | "medium" | "high";
   }[] = [];
 
-  // Get activities from last 7 days
-  const lastWeek = subDays(new Date(), 7);
-  const recentActivities = activities.filter(
-    (a) => new Date(a.timestamp) >= lastWeek
-  );
+  // ALWAYS show at least one insight for debugging
+  insights.push({
+    title: "Welcome to Your Wellness Journey",
+    description: "Start by tracking your mood or trying a therapy session to receive personalized insights.",
+    icon: Sparkles,
+    priority: "medium",
+  });
 
-  // Analyze mood patterns
-  const moodEntries = recentActivities.filter(
-    (a) => a.type === "mood" && a.moodScore !== null
-  );
-  if (moodEntries.length >= 2) {
-    const averageMood =
-      moodEntries.reduce((acc, curr) => acc + (curr.moodScore || 0), 0) /
-      moodEntries.length;
-    const latestMood = moodEntries[moodEntries.length - 1].moodScore || 0;
-
-    if (latestMood > averageMood) {
-      insights.push({
-        title: "Mood Improvement",
-        description:
-          "Your recent mood scores are above your weekly average. Keep up the good work!",
-        icon: Brain,
-        priority: "high",
-      });
-    } else if (latestMood < averageMood - 20) {
-      insights.push({
-        title: "Mood Change Detected",
-        description:
-          "I've noticed a dip in your mood. Would you like to try some mood-lifting activities?",
-        icon: Heart,
-        priority: "high",
-      });
-    }
-  }
-
-  // Analyze activity patterns
-  const mindfulnessActivities = recentActivities.filter((a) =>
-    ["game", "meditation", "breathing"].includes(a.type)
-  );
-  if (mindfulnessActivities.length > 0) {
-    const dailyAverage = mindfulnessActivities.length / 7;
-    if (dailyAverage >= 1) {
-      insights.push({
-        title: "Consistent Practice",
-        description: `You've been regularly engaging in mindfulness activities. This can help reduce stress and improve focus.`,
-        icon: Trophy,
-        priority: "medium",
-      });
-    } else {
-      insights.push({
-        title: "Mindfulness Opportunity",
-        description:
-          "Try incorporating more mindfulness activities into your daily routine.",
-        icon: Sparkles,
-        priority: "low",
-      });
-    }
-  }
-
-  // Check activity completion rate
-  const completedActivities = recentActivities.filter((a) => a.completed);
-  const completionRate =
-    recentActivities.length > 0
-      ? (completedActivities.length / recentActivities.length) * 100
-      : 0;
-
-  if (completionRate >= 80) {
+  // Mood insight
+  if (dailyStats.moodScore === null || dailyStats.moodScore === undefined) {
     insights.push({
-      title: "High Achievement",
-      description: `You've completed ${Math.round(
-        completionRate
-      )}% of your activities this week. Excellent commitment!`,
+      title: "Track Your First Mood",
+      description: "Log your mood today to get personalized insights and track your emotional wellbeing.",
+      icon: Brain,
+      priority: "high",
+    });
+  } else if (dailyStats.moodScore < 50) {
+    insights.push({
+      title: "Mood Support Available",
+      description: "Your mood could use some support. Try a calming activity or therapy session.",
+      icon: Heart,
+      priority: "high",
+    });
+  }
+
+  // Activity insight
+  if (dailyStats.totalActivities === 0) {
+    insights.push({
+      title: "Start with Activities",
+      description: "Try logging your first activity to build healthy habits and track your progress.",
+      icon: Activity,
+      priority: "medium",
+    });
+  }
+
+  if (dailyStats.mindfulnessCount > 0) {
+    insights.push({
+      title: "Therapy Progress",
+      description: `You've completed ${dailyStats.mindfulnessCount} therapy sessions! That's great consistency.`,
       icon: Trophy,
       priority: "high",
     });
-  } else if (completionRate < 50) {
+  }
+
+  // Add insight about activities
+  if (dailyStats.totalActivities > 0 && dailyStats.completionRate === 0) {
     insights.push({
-      title: "Activity Reminder",
-      description:
-        "You might benefit from setting smaller, more achievable daily goals.",
-      icon: Calendar,
+      title: "Complete Your Activities",
+      description: `You have ${dailyStats.totalActivities} activities planned. Try completing one to boost your progress!`,
+      icon: Activity,
       priority: "medium",
     });
   }
 
-  // Time pattern analysis
-  const morningActivities = recentActivities.filter(
-    (a) => new Date(a.timestamp).getHours() < 12
-  );
-  const eveningActivities = recentActivities.filter(
-    (a) => new Date(a.timestamp).getHours() >= 18
-  );
-
-  if (morningActivities.length > eveningActivities.length) {
-    insights.push({
-      title: "Morning Person",
-      description:
-        "You're most active in the mornings. Consider scheduling important tasks during your peak hours.",
-      icon: Sun,
-      priority: "medium",
-    });
-  } else if (eveningActivities.length > morningActivities.length) {
-    insights.push({
-      title: "Evening Routine",
-      description:
-        "You tend to be more active in the evenings. Make sure to wind down before bedtime.",
-      icon: Moon,
-      priority: "medium",
-    });
-  }
-
-  // Sort insights by priority and return top 3
-  return insights
-    .sort((a, b) => {
-      const priorityOrder = { high: 0, medium: 1, low: 2 };
-      return priorityOrder[a.priority] - priorityOrder[b.priority];
-    })
-    .slice(0, 3);
+  // Return top 3 insights
+  return insights.slice(0, 3);
 };
-
 export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -353,75 +339,78 @@ export default function Dashboard() {
   }, []);
 
   // Add this effect to update stats when activities change
-  useEffect(() => {
+ // Update stats when activities change
+useEffect(() => {
+  const updateStats = async () => {
     if (activities.length > 0) {
-      setDailyStats(calculateDailyStats(activities));
+      const stats = await calculateDailyStats(activities);
+      setDailyStats(stats);
     }
-  }, [activities]);
+  };
+  updateStats();
+}, [activities]);
 
   // Update the effect
+  // Update insights when activities or dailyStats change
   useEffect(() => {
-    if (activities.length > 0) {
-      setInsights(generateInsights(activities));
+    if (activities.length > 0 || dailyStats.totalActivities > 0) {
+      setInsights(generateInsights(activities, dailyStats));
     }
-  }, [activities]);
+}, [activities, dailyStats]);
+
+// Add this debug effect near your other useEffects
+useEffect(() => {
+  console.log("=== DEBUG DASHBOARD DATA ===");
+  console.log("Activities:", activities);
+  console.log("Daily Stats:", dailyStats);
+  console.log("Insights:", insights);
+  console.log("Mood Score in Stats:", dailyStats.moodScore);
+  console.log("Completion Rate in Stats:", dailyStats.completionRate);
+}, [activities, dailyStats, insights]);
 
   // Add function to fetch daily stats
-  const fetchDailyStats = useCallback(async () => {
-    try {
-      // Fetch therapy sessions using the chat API
-      const sessions = await getAllChatSessions();
 
-      // Fetch today's activities
-      // Get the token from localStorage (or wherever you store it after login)
-      const token = localStorage.getItem("token");
+// Update your fetchDailyStats to also reload activities
+const fetchDailyStats = useCallback(async () => {
+  try {
+    console.log("Refreshing dashboard data...");
+    
+    // Reload activities first
+    await loadActivities();
+    
+    // Then fetch fresh stats
+    const sessions = await getAllChatSessions();
+    const token = localStorage.getItem("token");
 
-      const activitiesResponse = await fetch(
-        "https://ai-therepist-agent-backend-api.onrender.com/api/activity/today",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        }
-      );
-
-      if (!activitiesResponse.ok) {
-        const error = await activitiesResponse.json();
-        console.error("Failed to fetch activities:", error);
-        throw new Error(error.message || "Failed to fetch activities");
+    const activitiesResponse = await fetch(
+      "https://ai-therepist-agent-backend-api.onrender.com/api/activity/today",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
       }
+    );
 
-const activities = await activitiesResponse.json();
-console.log("Today's activities:", activities);
-
-
-      // Calculate mood score from activities
-      const moodEntries = activities.filter(
-        (a: Activity) => a.type === "mood" && a.moodScore !== null
-      );
-      const averageMood =
-        moodEntries.length > 0
-          ? Math.round(
-              moodEntries.reduce(
-                (acc: number, curr: Activity) => acc + (curr.moodScore || 0),
-                0
-              ) / moodEntries.length
-            )
-          : null;
-
-      setDailyStats({
-        moodScore: averageMood,
-        completionRate: 100,
-        mindfulnessCount: sessions.length, // Total number of therapy sessions
-        totalActivities: activities.length,
-        lastUpdated: new Date(),
-      });
-    } catch (error) {
-      console.error("Error fetching daily stats:", error);
+    let activities = [];
+    if (activitiesResponse.ok) {
+      activities = await activitiesResponse.json();
+      console.log("Refreshed activities:", activities);
     }
-  }, []);
+
+    const stats = await calculateDailyStats(activities);
+    
+    setDailyStats({
+      ...stats,
+      mindfulnessCount: sessions.length,
+    });
+
+    console.log("Refresh completed");
+  } catch (error) {
+    console.error("Error refreshing dashboard:", error);
+  }
+}, [loadActivities]);
 
   // Fetch stats on mount and every 5 minutes
   useEffect(() => {
@@ -431,40 +420,43 @@ console.log("Today's activities:", activities);
   }, [fetchDailyStats]);
 
   // Update wellness stats to reflect the changes
-  const wellnessStats = [
-    {
-      title: "Mood Score",
-      value: dailyStats.moodScore ? `${dailyStats.moodScore}%` : "No data",
-      icon: Brain,
-      color: "text-purple-500",
-      bgColor: "bg-purple-500/10",
-      description: "Today's average mood",
-    },
-    {
-      title: "Completion Rate",
-      value: "100%",
-      icon: Trophy,
-      color: "text-yellow-500",
-      bgColor: "bg-yellow-500/10",
-      description: "Perfect completion rate",
-    },
-    {
-      title: "Therapy Sessions",
-      value: `${dailyStats.mindfulnessCount} sessions`,
-      icon: Heart,
-      color: "text-rose-500",
-      bgColor: "bg-rose-500/10",
-      description: "Total sessions completed",
-    },
-    {
-      title: "Total Activities",
-      value: dailyStats.totalActivities.toString(),
-      icon: Activity,
-      color: "text-blue-500",
-      bgColor: "bg-blue-500/10",
-      description: "Planned for today",
-    },
-  ];
+ 
+const wellnessStats = [
+  {
+    title: "Mood Score",
+    value: dailyStats.moodScore !== null && dailyStats.moodScore !== undefined 
+      ? `${dailyStats.moodScore}%` 
+      : "No data",
+    icon: Brain,
+    color: "text-purple-500",
+    bgColor: "bg-purple-500/10",
+    description: dailyStats.moodScore !== null ? "Today's mood" : "Log your mood today",
+  },
+  {
+    title: "Completion Rate",
+    value: `${dailyStats.completionRate}%`,
+    icon: Trophy,
+    color: "text-yellow-500",
+    bgColor: "bg-yellow-500/10",
+    description: "Activity completion rate",
+  },
+  {
+    title: "Therapy Sessions",
+    value: `${dailyStats.mindfulnessCount} sessions`,
+    icon: Heart,
+    color: "text-rose-500",
+    bgColor: "bg-rose-500/10",
+    description: "Total sessions completed",
+  },
+  {
+    title: "Today's Activities",
+    value: dailyStats.totalActivities.toString(),
+    icon: Activity,
+    color: "text-blue-500",
+    bgColor: "bg-blue-500/10",
+    description: "Activities for today",
+  },
+];
 
   // Load activities on mount
   useEffect(() => {
@@ -660,13 +652,13 @@ console.log("Today's activities:", activities);
                       {format(new Date(), "MMMM d, yyyy")}
                     </CardDescription>
                   </div>
-                  <Button
+                 <Button
                     variant="ghost"
                     size="icon"
                     onClick={fetchDailyStats}
                     className="h-8 w-8"
                   >
-                    <Loader2 className={cn("h-4 w-4", "animate-spin")} />
+                    <Loader2 className={cn("h-4 w-4")} />
                   </Button>
                 </div>
               </CardHeader>

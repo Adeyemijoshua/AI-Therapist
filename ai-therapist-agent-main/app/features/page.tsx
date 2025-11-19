@@ -5,62 +5,67 @@ import { Card } from "@/components/ui/card";
 import {
   Brain,
   Shield,
-  Fingerprint,
+  Sparkles,
   Activity,
   Bot,
   LineChart,
-  Wifi,
+  Clock,
+  Users,
+  Zap,
+  HeartPulse,
+  MessageCircle,
+  Target,
   Heart,
 } from "lucide-react";
 
 const features = [
   {
-    icon: <Bot className="w-10 h-10 text-primary" />,
-    title: "AI-Powered Therapy",
+    icon: <MessageCircle className="w-10 h-10 text-primary" />,
+    title: "Always There to Listen",
     description:
-      "24/7 access to empathetic AI agents trained in various therapeutic approaches, providing personalized mental health support.",
+      "Have real conversations with compassionate AI that understands your feelings and provides meaningful support anytime you need it.",
   },
   {
     icon: <Shield className="w-10 h-10 text-primary" />,
-    title: "Blockchain Security",
+    title: "Your Safe Space",
     description:
-      "Your therapy sessions are secured by blockchain technology, ensuring complete privacy and transparent record-keeping.",
+      "Share freely knowing every word is protected with military-grade encryption. Your privacy is our highest priority.",
   },
   {
     icon: <Brain className="w-10 h-10 text-primary" />,
-    title: "Smart Analysis",
+    title: "Emotion Intelligence",
     description:
-      "Advanced NLP and emotion detection helps understand your mental state and provide appropriate interventions.",
+      "Our advanced technology recognizes emotional patterns and offers insights to help you understand yourself better.",
   },
   {
-    icon: <Activity className="w-10 h-10 text-primary" />,
-    title: "Crisis Detection",
+    icon: <HeartPulse className="w-10 h-10 text-primary" />,
+    title: "Wellness Guardian",
     description:
-      "Real-time monitoring and emergency response protocols to ensure your safety during critical situations.",
+      "We gently check in during tough moments and provide immediate coping strategies when you need them most.",
   },
   {
-    icon: <Wifi className="w-10 h-10 text-primary" />,
-    title: "IoT Integration",
+    icon: <Clock className="w-10 h-10 text-primary" />,
+    title: "Daily Wellness Rituals",
     description:
-      "Connect with smart home devices to create an ambient therapeutic environment that adapts to your needs.",
+      "Start and end your day with guided reflections and mindfulness practices that fit perfectly into your routine.",
   },
   {
-    icon: <LineChart className="w-10 h-10 text-primary" />,
-    title: "Progress Tracking",
+    icon: <Target className="w-10 h-10 text-primary" />,
+    title: "Your Growth Journey",
     description:
-      "Detailed analytics and insights about your mental health journey, with blockchain-verified session records.",
+      "See how far you've come with beautiful visualizations of your progress and celebrate every step forward.",
   },
   {
-    icon: <Fingerprint className="w-10 h-10 text-primary" />,
-    title: "Privacy First",
+    icon: <Users className="w-10 h-10 text-primary" />,
+    title: "Together Stronger",
     description:
-      "End-to-end encryption and zero-knowledge proofs ensure your data remains completely confidential.",
+      "Find comfort in shared experiences through our supportive community spaces where everyone understands.",
   },
   {
-    icon: <Heart className="w-10 h-10 text-primary" />,
-    title: "Holistic Care",
+    icon: <Sparkles className="w-10 h-10 text-primary" />,
+    title: "Instant Relief Tools",
     description:
-      "Integration with wearables and health providers for comprehensive mental wellness monitoring.",
+      "Quick breathing exercises, calming techniques, and grounding methods for when anxiety strikes unexpectedly.",
   },
 ];
 
@@ -73,13 +78,22 @@ export default function FeaturesPage() {
         transition={{ duration: 0.5 }}
         className="text-center mb-16"
       >
+        <motion.div
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.2 }}
+          className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6"
+        >
+          <Sparkles className="w-4 h-4 mr-2 text-primary" />
+          <span className="text-sm font-medium text-primary">Transform Your Mental Wellness</span>
+        </motion.div>
+        
         <h1 className="text-4xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
           Platform Features
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Discover how our AI-powered platform revolutionizes mental health
-          support with cutting-edge technology and unwavering privacy
-          protection.
+          Discover how our platform provides compassionate mental health support 
+          with cutting-edge technology and unwavering privacy protection.
         </p>
       </motion.div>
 
@@ -108,11 +122,10 @@ export default function FeaturesPage() {
       >
         <h2 className="text-2xl font-semibold mb-4">Ready to Get Started?</h2>
         <p className="text-muted-foreground mb-8">
-          Join thousands of users benefiting from AI-powered mental health
-          support.
+          Join thousands of users benefiting from compassionate mental health support.
         </p>
         <a
-          href="/dashboard"
+          href="/login"
           className="inline-flex items-center px-6 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
         >
           Start Your Journey
