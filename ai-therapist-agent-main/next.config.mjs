@@ -7,41 +7,62 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
+  //  FIXED Experimental Section:
   experimental: {
-    appDir: true,
-    suppressHydrationWarning: true,
-    skipTypeChecking: true,
-    skipMiddlewareUrlNormalize: true,
-    missingSuspenseWithCSRBailout: false,
+    // Remove all the invalid options, keep only valid ones:
+    turbo: {
+      //  CORRECT: turbo should be an object, not boolean
+      rules: {
+        '*.{ts,tsx}': ['...'],
+      }
+    },
+    // Remove these invalid options:
+    // appDir: true,  // REMOVE - Not needed in Next.js 14
+    // suppressHydrationWarning: true,  // REMOVE
+    // skipTypeChecking: true,  // REMOVE  
+    // skipMiddlewareUrlNormalize: true,  // REMOVE
+    // missingSuspenseWithCSRBailout: false,  // REMOVE
+    
+    // You can add these if you want:
+    optimizeCss: true,
+    webpackMemoryOptimizations: true,
   },
 
   reactStrictMode: false,
-
-  // Disable image optimization warnings
+  
   images: {
     unoptimized: true,
   },
-
-  // Ignore specific page extensions
+  
+  //  ENABLE swcMinify for faster builds
+  swcMinify: true,
+  
   pageExtensions: ["tsx", "ts", "jsx", "js"].filter(
     (ext) => !ext.includes("spec")
   ),
-
-  // Configure webpack
+  
+  //  FIXED Webpack config:
   webpack: (config, { isServer, dev }) => {
-    // Ignore specific modules that might cause issues
+    // Keep your aliases
     config.resolve.alias = {
       ...config.resolve.alias,
       sharp$: false,
       canvas$: false,
     };
-
+    
+    // Add these for better performance:
+    if (!isServer) {
+      config.resolve.fallback = {
+        fs: false,
+        path: false,
+        os: false,
+      }
+    }
+    
     return config;
   },
 
-  // Suppress specific console warnings
   onDemandEntries: {
-    // Reduce console noise
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
   },

@@ -6,9 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "db:push": "drizzle-kit push",
-    "db:studio": "npx drizzle-kit studio"
+    "lint": "next lint"
   },
   "dependencies": {
     "@auth/core": "^0.34.2",
