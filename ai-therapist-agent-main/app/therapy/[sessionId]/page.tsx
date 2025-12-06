@@ -267,7 +267,7 @@ export default function TherapyPage() {
 
   const handleLogout = () => {
     console.log("Logging out...");
-    router.push("/auth/signin");
+    router.push("/");
   };
 
   useEffect(() => {
@@ -409,7 +409,7 @@ export default function TherapyPage() {
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-primary-foreground" />
               </div>
-              <span className="font-semibold">Aura</span>
+              <span className="font-semibold">Leo</span>
             </div>
             
             <div className="flex items-center gap-2">
@@ -436,7 +436,7 @@ export default function TherapyPage() {
                           <Sparkles className="w-6 h-6 text-primary-foreground" />
                         </div>
                         <div>
-                          <div className="font-bold text-lg">Aura</div>
+                          <div className="font-bold text-lg">Leo</div>
                           <div className="text-sm text-muted-foreground">Mental Wellness Companion</div>
                         </div>
                       </div>
