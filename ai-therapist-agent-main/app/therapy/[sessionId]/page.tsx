@@ -267,8 +267,13 @@ export default function TherapyPage() {
 
   const handleLogout = () => {
     console.log("Logging out...");
+    localStorage.clear();
+    sessionStorage.clear();
     router.push("/");
-  };
+    setTimeout(() => {
+        window.location.reload();
+    }, 100);
+};
 
   useEffect(() => {
     setMounted(true);
