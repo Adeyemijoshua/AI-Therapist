@@ -29,6 +29,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDistanceToNow } from "date-fns";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useSession } from "@/lib/contexts/session-context";
 
 interface SuggestedQuestion {
   id: string;
@@ -43,6 +44,7 @@ const SUGGESTED_QUESTIONS = [
 ];
 
 export default function TherapyPage() {
+  const { isAuthenticated, logout, user } = useSession();
   const params = useParams();
   const router = useRouter();
   const [message, setMessage] = useState("");
@@ -265,15 +267,11 @@ export default function TherapyPage() {
     }
   };
 
-  const handleLogout = () => {
-    console.log("Logging out...");
-    localStorage.clear();
-    sessionStorage.clear();
-    router.push("/");
-    setTimeout(() => {
-        window.location.reload();
-    }, 100);
-};
+  // const handleLogout = () => {
+  //   console.log("Logging out...");
+  //   router.push("/");
+  
+// };
 
   useEffect(() => {
     setMounted(true);
@@ -395,7 +393,7 @@ export default function TherapyPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={handleLogout}
+                onClick={logout}
                 className="h-8 w-8 rounded-lg"
               >
                 <LogOut className="w-4 h-4" />
@@ -515,7 +513,7 @@ export default function TherapyPage() {
                         variant="ghost" 
                         className="w-full justify-center gap-3 h-12 text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200"
                         onClick={() => {
-                          handleLogout();
+                          {logout};
                           setIsMobileMenuOpen(false);
                         }}
                       >
